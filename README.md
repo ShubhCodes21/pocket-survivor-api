@@ -221,7 +221,7 @@ Released under the MIT License.
 ### Built with ☕ and 🤖 by **Shubh Agarwal**
 
 [![GitHub](https://img.shields.io/badge/GitHub-ShubhCodes21-181717?style=for-the-badge&logo=github)](https://github.com/ShubhCodes21)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/shubh-agarwal)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/shubhagarwal21/)
 [![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:shubhagarwalval21@gmail.com)
 
 ⭐ Star this repo if you find it useful!
