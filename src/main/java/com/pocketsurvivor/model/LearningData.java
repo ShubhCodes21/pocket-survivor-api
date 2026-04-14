@@ -18,7 +18,7 @@ public class LearningData {
     private Long userId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "time_of_day", nullable = false, columnDefinition = "time_of_day")
+    @Column(name = "time_of_day", nullable = false, length = 20)
     private Expense.TimeOfDay timeOfDay;
 
     @Column(nullable = false, length = 50)

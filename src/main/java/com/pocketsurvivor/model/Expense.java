@@ -24,7 +24,7 @@ public class Expense {
     private Integer amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "time_of_day", nullable = false, columnDefinition = "time_of_day")
+    @Column(name = "time_of_day", nullable = false, length = 20)
     private TimeOfDay timeOfDay;
 
     @Column(name = "expense_date", nullable = false)

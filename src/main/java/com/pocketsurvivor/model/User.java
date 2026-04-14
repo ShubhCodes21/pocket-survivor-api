@@ -24,7 +24,7 @@ public class User {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "personality_type")
+    @Column(nullable = false, length = 20)
     private Personality personality;
 
     @Column(name = "monthly_budget", nullable = false)
