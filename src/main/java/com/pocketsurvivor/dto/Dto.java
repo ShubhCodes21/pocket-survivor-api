@@ -26,6 +26,16 @@ public final class Dto {
 
     public record AuthResponse(String token, UserResponse user) {}
 
+    public record ForgotPasswordRequest(
+        @NotBlank @Email String email
+    ) {}
+
+    public record ResetPasswordRequest(
+        @NotBlank @Email String email,
+        @NotBlank String token,
+        @NotBlank @Size(min = 6) String newPassword
+    ) {}
+
     // ── USER ─────────────────────────────────────────────────────
     public record UserResponse(
         Long id, String email, String name,
