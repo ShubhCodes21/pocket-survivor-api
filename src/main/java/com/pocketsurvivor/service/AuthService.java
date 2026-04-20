@@ -29,6 +29,7 @@ public class AuthService {
     private final PasswordResetTokenRepository resetTokenRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     @Transactional
     public AuthResponse register(RegisterRequest req) {
@@ -88,7 +89,8 @@ public class AuthService {
             .build();
         resetTokenRepo.save(resetToken);
 
-        log.info("Password reset OTP for {}: {}", req.email(), otp);
+        emailService.sendPasswordResetEmail(req.email(), otp);
+        log.info("Password reset OTP requested for {}", req.email());
     }
 
     @Transactional
