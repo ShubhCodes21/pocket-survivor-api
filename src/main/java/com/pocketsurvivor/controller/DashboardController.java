@@ -25,11 +25,14 @@ public class DashboardController {
     private final CoachService coachService;
     private final GamificationService gamificationService;
     private final LearningService learningService;
+    private final RecurringExpenseService recurringExpenseService;
 
     @GetMapping("/dashboard")
     public ResponseEntity<ApiResponse<DashboardResponse>> getDashboard(Authentication auth) {
         Long userId = (Long) auth.getPrincipal();
         User user = userRepo.findById(userId).orElseThrow();
+
+        recurringExpenseService.processRecurringForUser(userId);
 
         int todaySpent = budgetService.getTodaySpent(userId);
         int weekSpent = budgetService.getWeekSpent(userId);

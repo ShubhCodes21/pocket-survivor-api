@@ -108,6 +108,31 @@ public final class Dto {
         Map<String, List<Integer>> prices
     ) {}
 
+    // ── CUSTOM CATEGORIES ────────────────────────────────────────
+    public record CustomCategoryRequest(
+        @NotBlank @Size(max = 50) String name,
+        @Size(max = 30) String icon,
+        TimeOfDay timeOfDay
+    ) {}
+
+    public record CustomCategoryResponse(
+        Long id, String name, String icon, TimeOfDay timeOfDay
+    ) {}
+
+    // ── RECURRING EXPENSES ───────────────────────────────────────
+    public record RecurringExpenseRequest(
+        @NotBlank @Size(max = 50) String category,
+        @NotNull @Min(1) Integer amount,
+        @NotNull TimeOfDay timeOfDay,
+        @Size(max = 255) String note,
+        @Size(max = 20) String daysOfWeek
+    ) {}
+
+    public record RecurringExpenseResponse(
+        Long id, String category, Integer amount, TimeOfDay timeOfDay,
+        String note, Boolean isActive, String daysOfWeek, LocalDate lastAutoLogged
+    ) {}
+
     // ── GENERIC ──────────────────────────────────────────────────
     public record ApiResponse<T>(boolean success, String message, T data) {
         public static <T> ApiResponse<T> ok(T data) {

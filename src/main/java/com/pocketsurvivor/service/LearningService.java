@@ -7,6 +7,7 @@ import com.pocketsurvivor.model.LearningPrice;
 import com.pocketsurvivor.repository.LearningDataRepository;
 import com.pocketsurvivor.repository.LearningPriceRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
@@ -20,6 +21,7 @@ public class LearningService {
 
     private final LearningDataRepository learningRepo;
     private final LearningPriceRepository priceRepo;
+    private final CustomCategoryService customCategoryService;
 
     // Default categories per time slot
     private static final Map<String, List<String>> WEEKDAY_CATS = Map.of(
@@ -106,9 +108,19 @@ public class LearningService {
 
     /**
      * Full smart suggestions response for the bubble UI.
+     * Merges default categories with user's custom categories.
      */
     public SmartSuggestionsResponse getSuggestions(Long userId, TimeOfDay timeOfDay) {
         List<String> categories = getSmartCategories(userId, timeOfDay);
+
+        List<String> customNames = customCategoryService.getUserCategoryNames(userId, timeOfDay);
+        Set<String> existing = new HashSet<>(categories);
+        for (String name : customNames) {
+            if (existing.add(name)) {
+                categories.add(name);
+            }
+        }
+
         Map<String, List<Integer>> prices = new LinkedHashMap<>();
         for (String cat : categories) {
             prices.put(cat, getSmartPrices(userId, cat));
