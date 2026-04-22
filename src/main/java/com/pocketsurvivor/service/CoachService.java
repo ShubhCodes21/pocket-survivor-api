@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.time.YearMonth;
@@ -99,10 +100,13 @@ public class CoachService {
             case saver -> "warm, encouraging, celebratory. Celebrate wins warmly.";
         };
 
-        String goalsStr = activeGoals.isEmpty() ? "none"
+        String goalsStr = (activeGoals == null || activeGoals.isEmpty()) ? "none"
             : activeGoals.stream()
                 .map(g -> g.name() + "(₹" + g.savedAmount() + "/₹" + g.targetAmount() + ")")
                 .reduce((a, b) -> a + ", " + b).orElse("none");
+
+        String userName = user.getName() != null ? user.getName() : "friend";
+        String personality = user.getPersonality() != null ? user.getPersonality().name() : "balanced";
 
         String prompt = String.format("""
             You are a spending coach for an Indian college day-scholar named %s. Personality: "%s".
@@ -114,9 +118,9 @@ public class CoachService {
 
             ONE coaching message, max 2 sentences. Be specific with numbers. Reference goals if relevant. Sound like a college friend. No emojis. No quotes around the message.
             """,
-            user.getName(), user.getPersonality().name(),
+            userName, personality,
             user.getMonthlyBudget(), monthSpent, dailyBudget, todaySpent,
-            status.equals("over") ? "OVER budget" : "on track/under",
+            "over".equals(status) ? "OVER budget" : "on track/under",
             daysLeft, goalsStr, toneDesc
         );
 
@@ -132,6 +136,12 @@ public class CoachService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .retrieve()
+                .onStatus(status2 -> status2.is4xxClientError() || status2.is5xxServerError(),
+                    clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> {
+                            log.error("Anthropic API error {}: {}", clientResponse.statusCode(), errorBody);
+                            return Mono.error(new RuntimeException("Anthropic API " + clientResponse.statusCode() + ": " + errorBody));
+                        }))
                 .bodyToMono(Map.class)
                 .timeout(Duration.ofSeconds(10))
                 .map(resp -> {
