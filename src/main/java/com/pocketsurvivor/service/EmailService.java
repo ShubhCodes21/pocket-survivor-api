@@ -18,8 +18,16 @@ public class EmailService {
     @Value("${app.mail.from}")
     private String fromAddress;
 
+    @Value("${spring.mail.username:}")
+    private String mailUsername;
+
     @Async
     public void sendPasswordResetEmail(String toEmail, String otp) {
+        if (mailUsername == null || mailUsername.isBlank()) {
+            log.error("Cannot send password reset email to {}: MAIL_USERNAME is not set", toEmail);
+            return;
+        }
+
         try {
             var message = mailSender.createMimeMessage();
             var helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -32,7 +40,7 @@ public class EmailService {
             mailSender.send(message);
             log.info("Password reset email sent to {}", toEmail);
         } catch (Exception e) {
-            log.error("Failed to send password reset email to {}: {}", toEmail, e.getMessage());
+            log.error("Failed to send password reset email to {} via {}: {}", toEmail, mailUsername, e.getMessage(), e);
         }
     }
 
